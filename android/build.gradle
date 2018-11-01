@@ -31,4 +31,7 @@ android {
     lintOptions {
         disable 'InvalidPackage'
     }
+    dependencies {
+        api 'com.mercadopago.android.px:checkout:4.+'
+    }
 }
