@@ -12,31 +12,28 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String _platformVersion = 'Unknown';
+  String _boughtID = 'Start payment method';
+  static const String PUBLIC_KEY = "YOUR_PUBLIC_KEY";
+  static const String CHECKOUT_PREFERENCE_ID = "CHECKOUT_PREFENCE_ID";
 
   @override
   void initState() {
     super.initState();
-    initPlatformState();
   }
 
-  // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initPlatformState() async {
-    String platformVersion;
-    // Platform messages may fail, so we use a try/catch PlatformException.
+    String text;
     try {
-      platformVersion = await Mercadopagopluginforandroid.platformVersion;
+      Map<String, dynamic> result = await Mercadopago.startPayment(PUBLIC_KEY, CHECKOUT_PREFERENCE_ID);
+      text = "Bought ID: -> " + result["id"].toString();
     } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
+      text = 'Failed to do the payment.';
     }
 
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
     if (!mounted) return;
 
     setState(() {
-      _platformVersion = platformVersion;
+      _boughtID = text;
     });
   }
 
@@ -45,10 +42,15 @@ class _MyAppState extends State<MyApp> {
     return new MaterialApp(
       home: new Scaffold(
         appBar: new AppBar(
-          title: const Text('Plugin example app'),
+          title: const Text('Mercado Pago'),
         ),
-        body: new Center(
-          child: new Text('Running on: $_platformVersion\n'),
+        body: InkWell(
+          onTap: () {
+            initPlatformState();
+          },
+          child: new Center(
+            child: new Text(_boughtID),
+          ),
         ),
       ),
     );
